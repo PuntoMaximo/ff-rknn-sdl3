@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(ffrknn LANGUAGES CXX)
+project(ffrknn-sdl3 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -10,19 +10,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(${CMAKE_SOURCE_DIR})
 
-# find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-# find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 --permissive -D_FILE_OFFSET_BITS=64 -DREENTRANT")
 
 include_directories(
-    /home/gabriel/BUILDROOT/buildroot/output/host/aarch64-buildroot-linux-gnu/include/c++/11.3.0/aarch64-buildroot-linux-gnu
-    /home/gabriel/BUILDROOT/buildroot/output/host/aarch64-buildroot-linux-gnu/include/c++/11.3.0
-    /home/gabriel/BUILDROOT/buildroot/output/target/usr/include/SDL2
-    /home/gabriel/BUILDROOT/buildroot/output/staging/usr/include/drm
+    ../../host/aarch64-buildroot-linux-gnu/include/c++/11.3.0/aarch64-buildroot-linux-gnu
+    ../../host/aarch64-buildroot-linux-gnu/include/c++/11.3.0
+    ../../staging/usr/include/SDL2
+    ../../staging/usr/include/drm
+    ../../staging/usr/include/qt5
+    ../../staging/usr/include/qt5/QtWidgets
 )
 
-set(SDL_FONTCACHE_LIBRARIES "/home/gabriel/BUILDROOT/buildroot/output/target/usr/lib/libSDL_FontCache.a")
+set(SDL_FONTCACHE_LIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/../../staging/usr/lib/libSDL_FontCache.a")
 
 set(OTHER_LIBS
     SDL2_ttf
@@ -82,6 +83,14 @@ link_directories(${SDL2_LIBRARY_DIRS})
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
+# Usar pkg-config para Qt
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+include_directories ( ${Qt5_INCLUDE_DIRS} )
+include_directories ( ${Qt6_INCLUDE_DIRS} )
+link_directories ( ${Qt5_LIBRARY_DIRS} )
+link_directories ( ${Qt6_LIBRARY_DIRS} )
+
 set(SOURCES
     main.cpp
     postprocess.cc
@@ -91,14 +100,14 @@ set(HEADERS
     postprocess.h
 )
 
-add_executable(ffrknn
+add_executable(ffrknn-sdl3
     ${SOURCES}
     ${HEADERS}
     ${FORMS}
 )
 
 # Linkear las librerías necesarias
-target_link_libraries(ffrknn
+target_link_libraries(ffrknn-sdl3
     # Qt${QT_VERSION_MAJOR}::Widgets
     ${FFMPEG_LIBRARIES}
     ${OTHER_LIBS}
@@ -110,4 +119,6 @@ target_link_libraries(ffrknn
     # m
     # pthread
 )
+
+install (TARGETS ffrknn-sdl3 DESTINATION bin)
 
