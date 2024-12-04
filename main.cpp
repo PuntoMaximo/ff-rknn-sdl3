@@ -549,12 +549,6 @@ void displayTexture(void *imageData) {
     // Actualizar los bounding boxes para el siguiente frame
     bounding_boxes = matched_boxes;
 
-    if (clientThreadInit == 0) {
-        server_client_thread = std::thread(send_data, std::ref(number_of_cars));
-        server_client_thread.detach();
-        clientThreadInit = 1;
-    }
-
     // Texto "Detectando..." con fadeIn y fadeOut.
     if (detectando) {
         if (fade_in) {
